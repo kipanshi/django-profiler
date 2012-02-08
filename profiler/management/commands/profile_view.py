@@ -14,8 +14,9 @@ class Command(BaseCommand):
         make_option('--prefix', dest='prefix',
                     help='Prefix to the view name, in fact is a name'
                     'of a module containing views to profile'),
-        make_option('--profiler', dest='profiler', default='LineProfiler',
-                    help='Type of the profiler: %s' % PROFILERS.keys()),
+        make_option('--profilers', dest='profilers', default='cProfiler',
+                    help='List of the profilers to use: %s' %
+                    PROFILERS.keys()),
         make_option('--limit', dest='limit', default=PROFILER_LIMIT,
                     help='Number of lines limit profiler stats output to.'
                     'Positive integer.'),
@@ -24,7 +25,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        """Profile views with cProfile."""
+        """Profile views with cProfile or LineProfiler or both."""
 
         verbosity = int(options.get('verbosity', 1))
 
@@ -33,7 +34,7 @@ class Command(BaseCommand):
 
         prefix = options.get('prefix', None)
         output = options.get('output', None)
-        profiler = options.get('profiler')
+        profilers = options.get('profilers').split(',')
         limit = options.get('limit')
         try:
             limit = int(limit)
@@ -44,7 +45,7 @@ class Command(BaseCommand):
             return
 
         if verbosity:
-            print 'Using: %s' % profiler
+            print 'Using: %s' % profilers
 
         if args:
             view_names = args[0].split(',')
@@ -104,7 +105,10 @@ class Command(BaseCommand):
             get_request = rf.get(url)
             get_request.user = user
             # Render response with profiling
-            response = profile(view_function, args=[get_request],
-                               profiler=profiler, log_file=output, limit=limit)
-            print 'Profiled ``%s.%s``, response status code: %s' % \
-                (prefix, view_name, response.status_code)
+            for profiler in profilers:
+                response = profile(view_function, args=[get_request],
+                                   profiler=profiler,
+                                   log_file=output,
+                                   limit=limit)
+                print 'Profiled ``%s.%s``, response status code: %s' % \
+                    (prefix, view_name, response.status_code)
