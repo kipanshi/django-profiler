@@ -2,6 +2,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.test import client
+from sqlprinting import SqlPrintingMiddleware
 from django.conf import settings
 
 from profiler import PROFILER_LIMIT, PROFILERS, profile
@@ -110,5 +111,10 @@ class Command(BaseCommand):
                                    profiler=profiler,
                                    log_file=output,
                                    limit=limit)
-                print 'Profiled ``%s.%s``, response status code: %s' % \
+                print '[OK] Profiled ``%s.%s``, response status code: %s\n' % \
                     (prefix, view_name, response.status_code)
+
+            # Print SQL queries
+            response = view_function(get_request)
+            sqlprinting_middleware = SqlPrintingMiddleware()
+            sqlprinting_middleware.process_response({}, response)
