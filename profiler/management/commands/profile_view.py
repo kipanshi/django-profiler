@@ -4,8 +4,9 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.test import client
 from django.conf import settings
 from django.db import connection
-from profiler.sqlprinting import SqlPrintingMiddleware
+from django.contrib.auth.models import User as BaseUser
 
+from profiler.sqlprinting import SqlPrintingMiddleware
 from profiler import PROFILER_LIMIT, PROFILERS, profile
 
 
@@ -62,18 +63,22 @@ class Command(BaseCommand):
             return
 
         # User is needed to be attached to get_request
-        user_model = getattr(settings, 'PROFILER_USER_MODEL', None)
+        user_model = getattr(settings, 'PROFILER_USER_MODEL', )
 
-        try:
-            # Import module containing user model
-            user_model_name = user_model.split('.')[-1]
-            user_module_name = '.'.join(user_model.split('.')[:-1])
-            user_module = __import__(user_module_name, {}, {}, [''])
-            user_model = getattr(user_module, user_model_name)
-        except Exception, e:
-            print 'Wrong PROFILER_USER_MODEL format: %s' % user_model
-            print e
-            return
+        # If no user model specified, use ``django.contrib.auth.models.User``
+        if user_model:
+            try:
+                # Import module containing user model
+                user_model_name = user_model.split('.')[-1]
+                user_module_name = '.'.join(user_model.split('.')[:-1])
+                user_module = __import__(user_module_name, {}, {}, [''])
+                user_model = getattr(user_module, user_model_name)
+            except Exception, e:
+                print 'Wrong PROFILER_USER_MODEL format: %s' % user_model
+                print e
+                return
+        else:
+            user_model = BaseUser
 
         # Get user for the request
         user = user_model.objects.filter(is_superuser=True)[0]

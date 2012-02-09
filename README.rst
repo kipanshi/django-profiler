@@ -1,13 +1,16 @@
-# Profiling django view functions
-
+=================================
+ Profiling django view functions
+=================================
 
 The default profiler is cPython.
 
 Profiling is done via management command.
 TODO: Currently class-based views are not supported
 
-## Installation
-download and run
+Installation
+============
+
+Download and run
     python setup.py install
 
 For flexibility, it's a good practice to use `local_settings.py`
@@ -30,7 +33,8 @@ Set up the following options according to your project:
     PROFILER_QUERIES_LIMIT = 3  # output by default 3 slowest queries
 
 
-## Usage
+Usage
+=====
 
 **Note: If your view is decorated, LineProfiler will output stats for the top
 decorator, so it's recomended temporarily disable decorators if you want

@@ -3,7 +3,7 @@ from django.conf import settings
 import os
 
 
-QUERIES_LIMIT = getattr(settings, 'SQLPRINTING_QUERIES_LIMIT', 3)
+QUERIES_LIMIT = getattr(settings, 'PROFILER_QUERIES_LIMIT', 3)
 
 
 def terminal_width():
