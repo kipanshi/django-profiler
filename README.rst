@@ -5,7 +5,8 @@
 The default profiler is cPython.
 
 Profiling is done via management command.
-TODO: Currently class-based views are not supported
+
+**TODO: Currently class-based views are not supported**
 
 Installation
 ============
