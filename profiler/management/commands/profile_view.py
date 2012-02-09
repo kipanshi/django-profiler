@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.test import client
 from django.conf import settings
 from django.db import connection
-from sqlprinting import SqlPrintingMiddleware
+from profiler.sqlprinting import SqlPrintingMiddleware
 
 from profiler import PROFILER_LIMIT, PROFILERS, profile
 
