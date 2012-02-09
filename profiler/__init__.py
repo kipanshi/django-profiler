@@ -22,8 +22,8 @@ class CProfileProfiler(object):
             p.dump_stats(outfile)
         else:
             import pstats
-            sort = 'cumulative'  # sorty by cumulative time
-            pstats.Stats(p).strip_dirs().sort_stats(sort).print_stats(limit)
+            sort = ['time', 'cumulative']  # sorty by total then by cumulative
+            pstats.Stats(p).sort_stats(*sort).print_stats(limit)
         return result
 
 
